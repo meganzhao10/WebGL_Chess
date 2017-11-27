@@ -1,0 +1,47 @@
+Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
+	precision highp float;
+	varying vec2 texCoord;
+	uniform sampler2D colorTexture; 
+	uniform vec4 lightPos[2]; // xyz is the direction, w is 0
+	uniform vec4 lightPowerDensity[2]; // w ignored
+	uniform vec4 mainDir;
+	uniform vec3 cameraPosition;
+
+	varying vec4 worldPos;
+	varying vec3 worldNormal;
+
+	void main(void) {
+
+		gl_FragColor = vec4(0,0,0,1);
+		vec3 color = vec3(0,0,0);
+
+		for (int i = 0; i < 2; i++){
+
+			vec3 lightDiff = lightPos[i].xyz - worldPos.xyz * lightPos[i].w;
+			vec3 viewDiff = cameraPosition - worldPos.xyz;
+			vec3 halfwayVector = normalize(viewDiff) + normalize(lightDiff * (-1.0));
+
+			vec3 powerDensity;
+			if (lightPos[i].w == 1.0){
+				powerDensity = lightPowerDensity[i].xyz * pow(max(0.0,dot(normalize(mainDir.xyz),normalize((-1.0) * lightDiff))), 5.0);
+			} else{
+				powerDensity = lightPowerDensity[i].xyz;
+			}
+
+			float cosTheta = max(dot(normalize(lightDiff), normalize(worldNormal)),0.0);
+			vec3 diffuseLight = powerDensity / pow(length(lightDiff), 2.0) * 
+				texture2D(colorTexture, texCoord).rgb * cosTheta;
+
+
+			float shininess = 3.0;
+			float specularLightWeight = pow(max(0.0, dot(normalize(worldNormal),halfwayVector)),shininess);
+			vec3 specularLight = texture2D(colorTexture, texCoord).rgb * specularLightWeight;
+
+			color += diffuseLight + specularLight;
+		}
+
+		gl_FragColor = vec4(color,1);
+
+	}
+`;		
+		

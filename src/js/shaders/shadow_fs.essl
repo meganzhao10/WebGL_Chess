@@ -1,0 +1,18 @@
+Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
+	precision highp float;
+	varying vec2 texCoord;
+	uniform sampler2D colorTexture; 
+	uniform vec4 lightPos[2]; // xyz is the direction, w is 0
+	uniform vec4 lightPowerDensity[2]; // w ignored
+	uniform vec3 mainDir;
+	uniform vec3 cameraPosition;
+
+	varying vec4 worldPos;
+	varying vec3 worldNormal;
+
+	void main(void) {
+
+		gl_FragColor = vec4(0,0,0,1);
+	}
+`;		
+		

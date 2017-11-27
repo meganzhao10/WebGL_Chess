@@ -1,0 +1,51 @@
+Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
+	precision highp float;
+	varying vec2 texCoord;
+	uniform sampler2D colorTexture; 
+	uniform vec4 lightPos[2]; // xyz is the direction, w is 0
+	uniform vec4 lightPowerDensity[2]; // w ignored
+	uniform vec4 mainDir;
+	uniform vec3 cameraPosition;
+
+	varying vec4 worldPos;
+	varying vec3 worldNormal;
+
+	float snoise(vec3 r) {
+	  vec3 s = vec3(7502, 22777, 4767);
+	  float w = 0.0;
+	  for(int i=0; i<16; i++) {
+	    w += sin( dot(s - vec3(32768, 32768, 32768),
+	            r * 40.0) / 65536.0);
+	    s = mod(s, 32768.0) * 2.0 + floor(s / 32768.0);
+	  }
+	  return w / 32.0 + 0.5;
+	}
+
+	void main(void) {
+
+	    float scale = 16.0;
+	    float turbulence = 500.0;
+	    float period = 8.0;
+	    float sharpness = 10.0;
+
+
+		  float w = worldPos.x * period + pow(snoise(worldPos.xyz * scale), sharpness)*turbulence;
+
+		  w -= float(w + 10000.0);  //take fractional part
+
+		                 
+
+		  vec3 color = vec3(1, 0.3, 0) * w + vec3(0.35, 0.1, 0.05) * (1.0 - w);  // light wood + dack
+		  
+
+
+
+		gl_FragColor = vec4(color,1);
+
+
+	}
+
+
+
+`;		
+		
