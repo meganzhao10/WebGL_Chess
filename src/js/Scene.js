@@ -31,31 +31,33 @@ let Scene = function(gl) {
 
   this.quadrics = new Mat4Array(3);
   this.brdfs = new Vec4Array(1);
-      //shape
+
+  //chessboard
   this.quadrics.at(0).set(
       0, 0, 0, 0,
       0, 1, 0, 0,
       0, 0, 0, 0,
       0, 0, 0, -1);
-  //clipper
   this.quadrics.at(1).set(
       1, 0, 0, 0,
       0, 0, 0, 0,
       0, 0, 0, 0,
-      0, 0, 0, -1); //scale(0.5, 2, 0.9);
+      0, 0, 0, -1);
   this.quadrics.at(2).set(
       0, 0, 0, 0,
       0, 0, 0, 0,
       0, 0, 1, 0,
-      0, 0, 0, -1); //scale(0.5, 2, 0.9);
+      0, 0, 0, -1);
+  //
+
+
   //material
   this.brdfs.at(0).set(1, 1, 1, 0); 
-
 
   this.lightSource = new LightSource();
 
   this.camera = new PerspectiveCamera();
-  this.camera.position.set(0,-3,10);
+  this.camera.position.set(0,0,2.9);
 };
 
 

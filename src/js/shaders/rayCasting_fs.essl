@@ -101,13 +101,15 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	}
 
 	//material for square: if (x+z) % 2 == 0;
-	// vec4 boardColor(){
-	// 	if ((worldPos.x + worldPos.z) % 2.0 == 0.0){
-	// 		return vec4(0,0,0,1);
-	// 	} else{
-	// 		return vec4(1,1,1,1);
-	// 	}
-	// }
+	vec4 boardColor(vec4 position){
+		float row = floor(position.x * 4.0);
+		float column = floor(position.z * 4.0);
+		if (mod(row + column, 2.0) == 0.0){
+			return vec4(1,1,0,1);
+		} else{
+			return vec4(0,1,1,1);
+		}
+	}
 
 
 	void main(void) {
@@ -131,7 +133,8 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 		} else {
 			vec4 intersectPoint = e + d * bestT;
 		  	vec3 quadricNormal = normalize((bestA * intersectPoint + intersectPoint * bestA).xyz);
-			gl_FragColor = vec4(quadricNormal, 1);// + boardColor();
+			//gl_FragColor = vec4(bestBrdf, 1);// + boardColor();
+			gl_FragColor = boardColor(intersectPoint);
 		}
 
 	}
