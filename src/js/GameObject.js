@@ -44,7 +44,7 @@ GameObject.prototype.drawShadow = function(camera,material,lightDir){
 };
 
 
-GameObject.prototype.draw = function(camera,lightSource,quadrics,brdfs){ 
+GameObject.prototype.draw = function(camera,lightSource,clippedQuadricArray,brdfs){ 
   this.updateModelMatrix();
 // TODO: Set the uniform modelViewProjMatrix (reflected in the material) to modelMatrix multiplied by the camera’s viewProjMatrix. Use Mat4 methods set() and/or mul().
   //this.mesh.setUniform("modelViewProjMatrix",this.modelMatrix.mul(camera.viewProjMatrix));
@@ -59,6 +59,12 @@ GameObject.prototype.draw = function(camera,lightSource,quadrics,brdfs){
   Material.mainDir = lightSource.mainDir;
   Material.lightPos = lightSource.lightPos;
   Material.rayDirMatrix = camera.rayDirMatrix;
+  let quadrics = new Mat4Array(15);
+  for (var i = 0; i < 5; i++){
+    quadrics.at(i*3).set(clippedQuadricArray[i].surfaceCoeffMatrix);
+    quadrics.at(i*3+1).set(clippedQuadricArray[i].clipperCoeffMatrix);
+    quadrics.at(i*3+2).set(clippedQuadricArray[i].clipperCoeffMatrix2);
+  }
   Material.quadrics = quadrics;
   Material.brdfs = brdfs;
 

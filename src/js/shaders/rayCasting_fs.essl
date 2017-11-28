@@ -11,8 +11,9 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	varying vec3 worldNormal;
 	varying vec4 rayDir;
 
-	uniform mat4 quadrics[3];
-	uniform vec4 brdfs[1];
+	uniform mat4 quadrics[15];
+	uniform vec4 brdfs[3];
+	//const quadricsSize = quadrics.length;
 
 	float intersectClippedQuadric(mat4 A, mat4 B, vec4 e, vec4 d){
 		float a = dot(d * A, d);
@@ -89,18 +90,17 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 			bestA = quadrics[2];
 		}
 
-		for (int i = 3; i < 3; i += 2){
+		for (int i = 3; i < 15; i += 3){
 			float currentT = intersectClippedQuadric(quadrics[i], quadrics[i+1], e, d);
 			if(currentT > bestT){
 				bestT = currentT;
-				bestBrdf = brdfs[i];
+				bestBrdf = brdfs[(i-3)/3+1];
 				bestA = quadrics[i];
 			}
 		}
 		return (bestT != -1.0);
 	}
 
-	//material for square: if (x+z) % 2 == 0;
 	vec4 boardColor(vec4 position){
 		float row = floor(position.x * 4.0);
 		float column = floor(position.z * 4.0);
@@ -134,7 +134,12 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 			vec4 intersectPoint = e + d * bestT;
 		  	vec3 quadricNormal = normalize((bestA * intersectPoint + intersectPoint * bestA).xyz);
 			//gl_FragColor = vec4(bestBrdf, 1);// + boardColor();
-			gl_FragColor = boardColor(intersectPoint);
+			
+			//gl_FragColor = boardColor(intersectPoint);
+			if (bestBrdf == brdfs[0]){
+				bestBrdf = boardColor(intersectPoint);
+			}
+			gl_FragColor = bestBrdf;
 		}
 
 	}

@@ -29,30 +29,42 @@ let Scene = function(gl) {
     this.envirObject.orientation = 3.14/2;
   this.envirObject.rotateAxis.set(1, 0, 0);
 
-  this.quadrics = new Mat4Array(3);
-  this.brdfs = new Vec4Array(1);
 
-  //chessboard
-  this.quadrics.at(0).set(
-      0, 0, 0, 0,
-      0, 1, 0, 0,
-      0, 0, 0, 0,
-      0, 0, 0, -1);
-  this.quadrics.at(1).set(
-      1, 0, 0, 0,
-      0, 0, 0, 0,
-      0, 0, 0, 0,
-      0, 0, 0, -1);
-  this.quadrics.at(2).set(
-      0, 0, 0, 0,
-      0, 0, 0, 0,
-      0, 0, 1, 0,
-      0, 0, 0, -1);
-  //
+  this.clippedQuadricArray = [];
+
+  let board = new ClippedQuadric(new Mat4(),new Mat4(), new Mat4());
+  board.setBoard();
+  this.clippedQuadricArray.push(board);
+
+  let sphere = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
+  sphere.setUnitSphere();
+  sphere.transform(new Mat4().scale(.1,.1,.1));
+  this.clippedQuadricArray.push(sphere);
+
+  let cone = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
+  cone.setCone();
+  this.clippedQuadricArray.push(cone);
+
+  let bishopSphere = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
+  bishopSphere.setBishopSphere();
+  bishopSphere.transform(new Mat4().scale(.1,.1,.1).translate(.5,0,0));
+  this.clippedQuadricArray.push(bishopSphere);
+
+  let bishopCone = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
+  bishopCone.setCone();
+  bishopCone.transform(new Mat4().translate(.5,0,0));
+  this.clippedQuadricArray.push(bishopCone);
+
+
+  
 
 
   //material
-  this.brdfs.at(0).set(1, 1, 1, 0); 
+  this.brdfs = new Vec4Array(3);
+  this.brdfs.at(0).set(0, 0, 0, 1); 
+  this.brdfs.at(1).set(.5, .5, .5, 1); 
+  this.brdfs.at(2).set(.5, .5, .5, 1); 
+  this.brdfs.at(3).set(.5, .5, .5, 1); 
 
   this.lightSource = new LightSource();
 
@@ -73,10 +85,9 @@ Scene.prototype.update = function(gl, keysPressed) {
   gl.clearDepth(1.0);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-
   this.camera.move(dt, keysPressed);
   
-  this.envirObject.draw(this.camera, this.lightSource, this.quadrics, this.brdfs);
+  this.envirObject.draw(this.camera, this.lightSource, this.clippedQuadricArray, this.brdfs);
 
 
 }
