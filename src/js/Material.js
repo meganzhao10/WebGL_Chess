@@ -29,7 +29,7 @@ Material.lightPos = new Vec4Array();
 Material.lightPowerDensity = new Vec4Array();
 Material.mainDir = new Vec4Array();
 Material.rayDirMatrix = new Mat4();
-Material.quadrics = new Vec4Array(2);
+Material.quadrics = new Mat4Array(3);
 Material.brdfs = new Vec4Array(1);
 
 Material.prototype.commit = function() { 

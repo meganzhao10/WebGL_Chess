@@ -11,19 +11,8 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	varying vec3 worldNormal;
 	varying vec4 rayDir;
 
-	uniform mat4 quadrics[2];
+	uniform mat4 quadrics[3];
 	uniform vec4 brdfs[1];
-
-
-	mat4 A = mat4(	1, 0, 0, 0,
-					0, 1, 0, 0,
-					0, 0, 1, 0,
-					0, 0, 0, -9	);
-
-	mat4 B = mat4(	1, 0, 0, 0,
-					0, 0, 0, 0,
-					0, 0, 0, 0,
-					0, 0, 0, -4	);
 
 	float intersectClippedQuadric(mat4 A, mat4 B, vec4 e, vec4 d){
 		float a = dot(d * A, d);
@@ -50,22 +39,76 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 		}
 	}
 
+	float intersectClippedQuadric(mat4 A, mat4 B, mat4 C, vec4 e, vec4 d){
+		float a = dot(d * A, d);
+		float b = dot(d * A, e) + dot(e * A, d);
+		float c = dot(e * A, e);
+		float discriminant = b * b - 4.0 * a * c;
+		if (discriminant < 0.0){
+		 	return -1.0;
+		}
+		float t1 = (-b + sqrt(discriminant)) / (2.0 * a);
+		float t2 = (-b - sqrt(discriminant)) / (2.0 * a);
+		vec4 hit1 = e + d * t1;
+		vec4 hit2 = e + d * t2;
+		if (dot(hit1 * B, hit1) > 0.0 || dot(hit1 * C, hit1) > 0.0){
+			t1 = -1.0;
+		}
+		if (dot(hit2 * B, hit2) > 0.0 || dot(hit2 * C, hit2) > 0.0){
+			t2 = -1.0;
+		}
+		if (t1 < t2 && t1 > 0.0 || t2 < 0.0){
+			return t1;
+		} else {
+			return t2;
+		}
+	}
+
 	bool findBestHit(vec4 e, vec4 d, out float bestT, out vec4 bestBrdf, out mat4 bestA){
 		bestT = -1.0;
 		bestBrdf = brdfs[0];
 		bestA = quadrics[0];
-		for (int i = 0; i < 1; i++){
-			float currentT = intersectClippedQuadric(quadrics[i*2], quadrics[i*2+1], e, d);
+		
+		//chessboard box
+		float currentT = intersectClippedQuadric(quadrics[0], quadrics[1], quadrics[2], e, d);
+		if(currentT > bestT){
+			bestT = currentT;
+			bestBrdf = brdfs[0];
+			bestA = quadrics[0];
+		}
+		currentT = intersectClippedQuadric(quadrics[1], quadrics[2], quadrics[0], e, d);
+		if(currentT > bestT){
+			bestT = currentT;
+			bestBrdf = brdfs[0];
+			bestA = quadrics[1];
+		}
+		currentT = intersectClippedQuadric(quadrics[2], quadrics[0], quadrics[1], e, d);
+		if(currentT > bestT){
+			bestT = currentT;
+			bestBrdf = brdfs[0];
+			bestA = quadrics[2];
+		}
+
+		for (int i = 3; i < 3; i += 2){
+			float currentT = intersectClippedQuadric(quadrics[i], quadrics[i+1], e, d);
 			if(currentT > bestT){
 				bestT = currentT;
 				bestBrdf = brdfs[i];
-				bestA = quadrics[i*2];
+				bestA = quadrics[i];
 			}
 		}
 		return (bestT != -1.0);
 	}
 
-	
+	//material for square: if (x+z) % 2 == 0;
+	// vec4 boardColor(){
+	// 	if ((worldPos.x + worldPos.z) % 2.0 == 0.0){
+	// 		return vec4(0,0,0,1);
+	// 	} else{
+	// 		return vec4(1,1,1,1);
+	// 	}
+	// }
+
 
 	void main(void) {
 
@@ -73,6 +116,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 		// compute ideal reflected direction 
 		//vec3 reflDir = reflect(-viewDir, worldNormal);
 		//find corresponding point in light probe
+
 		vec3 m = normalize(normalize(rayDir.xyz) + vec3(0,0,1));
 		vec2 probeTex = vec2(m.x / 2.0 + 0.5, -m.y / 2.0 + 0.5);
 		
@@ -86,11 +130,9 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 			gl_FragColor = texture2D( probeTexture, probeTex);
 		} else {
 			vec4 intersectPoint = e + d * bestT;
-		  	vec3 quadricNormal = normalize((A * intersectPoint + intersectPoint * A).xyz);
-			gl_FragColor = vec4(quadricNormal, 1);
+		  	vec3 quadricNormal = normalize((bestA * intersectPoint + intersectPoint * bestA).xyz);
+			gl_FragColor = vec4(quadricNormal, 1);// + boardColor();
 		}
-		
-		
 
 	}
 

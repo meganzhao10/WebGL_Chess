@@ -9,6 +9,7 @@ let GameObject = function(mesh) {
   this.angularVelocity = 0;
   this.direction = new Vec4(0,0,-1,0);  
   this.modelMatrix = new Mat4(); 
+  this.ground = false;
 };
 
 GameObject.prototype.updateModelMatrix = function(){ 
