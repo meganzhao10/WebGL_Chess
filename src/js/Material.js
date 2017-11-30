@@ -29,8 +29,8 @@ Material.lightPos = new Vec4Array();
 Material.lightPowerDensity = new Vec4Array();
 Material.mainDir = new Vec4Array();
 Material.rayDirMatrix = new Mat4();
-Material.quadrics = new Mat4Array(15);
-Material.brdfs = new Vec4Array(1);
+Material.quadrics = new Mat4Array();
+Material.brdfs = new Vec4Array();
 
 Material.prototype.commit = function() { 
   let gl = this.gl; 

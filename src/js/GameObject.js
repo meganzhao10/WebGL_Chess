@@ -59,12 +59,23 @@ GameObject.prototype.draw = function(camera,lightSource,clippedQuadricArray,brdf
   Material.mainDir = lightSource.mainDir;
   Material.lightPos = lightSource.lightPos;
   Material.rayDirMatrix = camera.rayDirMatrix;
-  let quadrics = new Mat4Array(15);
-  for (var i = 0; i < 5; i++){
-    quadrics.at(i*3).set(clippedQuadricArray[i].surfaceCoeffMatrix);
-    quadrics.at(i*3+1).set(clippedQuadricArray[i].clipperCoeffMatrix);
-    quadrics.at(i*3+2).set(clippedQuadricArray[i].clipperCoeffMatrix2);
+
+  //update Number of quadrics array
+  var quadricsObjects = 11;
+
+  let quadrics = new Mat4Array(quadricsObjects * 3);
+  for (var i = 0; i < quadricsObjects; i++){
+    if (i != 5){
+      quadrics.at(i*3).set(clippedQuadricArray[i].surfaceCoeffMatrix);
+      quadrics.at(i*3+1).set(clippedQuadricArray[i].clipperCoeffMatrix);
+      quadrics.at(i*3+2).set(clippedQuadricArray[i].clipperCoeffMatrix2);
+    } else{
+      quadrics.at(i*3).set(clippedQuadricArray[i].clipperCoeffMatrix);
+      quadrics.at(i*3+1).set(clippedQuadricArray[i].surfaceCoeffMatrix);
+      quadrics.at(i*3+2).set(clippedQuadricArray[i].clipperCoeffMatrix2);
+    }
   }
+
   Material.quadrics = quadrics;
   Material.brdfs = brdfs;
 

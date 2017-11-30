@@ -1,8 +1,8 @@
 Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	precision highp float;
 	varying vec2 texCoord; 
-	uniform vec4 lightPos[2]; // xyz is the direction, w is 0
-	uniform vec4 lightPowerDensity[2]; // w ignored
+	uniform vec4 lightPos[1]; // xyz is the direction, w is 0
+	uniform vec4 lightPowerDensity[1]; // w ignored
 	uniform vec4 mainDir;
 	uniform sampler2D probeTexture;
 	uniform vec3 cameraPosition;
@@ -10,10 +10,12 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	varying vec4 worldPos;
 	varying vec3 worldNormal;
 	varying vec4 rayDir;
+	//update #
+	const int quadricsObjects = 11;
 
-	uniform mat4 quadrics[15];
-	uniform vec4 brdfs[3];
-	//const quadricsSize = quadrics.length;
+	uniform mat4 quadrics[quadricsObjects * 3];
+	uniform vec4 brdfs[quadricsObjects];
+	
 
 	float intersectClippedQuadric(mat4 A, mat4 B, vec4 e, vec4 d){
 		float a = dot(d * A, d);
@@ -90,7 +92,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 			bestA = quadrics[2];
 		}
 
-		for (int i = 3; i < 15; i += 3){
+		for (int i = 3; i < quadricsObjects * 3; i += 3){
 			float currentT = intersectClippedQuadric(quadrics[i], quadrics[i+1], e, d);
 			if(currentT > bestT){
 				bestT = currentT;
@@ -118,7 +120,6 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 		// compute ideal reflected direction 
 		//vec3 reflDir = reflect(-viewDir, worldNormal);
 		//find corresponding point in light probe
-
 		vec3 m = normalize(normalize(rayDir.xyz) + vec3(0,0,1));
 		vec2 probeTex = vec2(m.x / 2.0 + 0.5, -m.y / 2.0 + 0.5);
 		
@@ -129,18 +130,46 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 		bool intersect = findBestHit(e, d, bestT, bestBrdf, bestA);
 
 		if (!intersect){
-			gl_FragColor = texture2D( probeTexture, probeTex);
+			gl_FragColor = texture2D(probeTexture, probeTex);
 		} else {
 			vec4 intersectPoint = e + d * bestT;
 		  	vec3 quadricNormal = normalize((bestA * intersectPoint + intersectPoint * bestA).xyz);
-			//gl_FragColor = vec4(bestBrdf, 1);// + boardColor();
+			//gl_FragColor = vec4(bestBrdf, 1);
 			
 			//gl_FragColor = boardColor(intersectPoint);
 			if (bestBrdf == brdfs[0]){
 				bestBrdf = boardColor(intersectPoint);
 			}
-			gl_FragColor = bestBrdf;
-		}
+
+			vec3 color = vec3(0,0,0);
+
+			for (int i = 0; i < 1; i++){
+
+				vec3 lightDiff = lightPos[i].xyz - intersectPoint.xyz * lightPos[i].w;
+				vec3 viewDiff = cameraPosition - intersectPoint.xyz;
+				vec3 halfwayVector = normalize(viewDiff) + normalize(lightDiff * (-1.0));
+
+				vec3 powerDensity;
+				if (lightPos[i].w == 1.0){
+					powerDensity = lightPowerDensity[i].xyz * pow(max(0.0,dot(normalize(mainDir.xyz),normalize((-1.0) * lightDiff))), 5.0);
+				} else{
+					powerDensity = lightPowerDensity[i].xyz;
+				}
+
+				float cosTheta = max(dot(normalize(lightDiff), normalize(quadricNormal)),0.0);
+				vec3 diffuseLight = powerDensity / pow(length(lightDiff), 2.0) * 
+					bestBrdf.xyz * cosTheta;
+
+				float shininess = 3.0;
+				float specularLightWeight = pow(max(0.0, dot(normalize(quadricNormal),halfwayVector)),shininess);
+				vec3 specularLight = bestBrdf.xyz * specularLightWeight;
+
+				color += diffuseLight + specularLight;
+			}
+
+			gl_FragColor = vec4(color,1);
+
+			}
 
 	}
 
