@@ -31,22 +31,20 @@ let Scene = function(gl) {
 
 
   this.clippedQuadricArray = [];
-  //1
+  //////////////board(1)
   let board = new ClippedQuadric(new Mat4(),new Mat4(), new Mat4());
   board.setBoard();
   this.clippedQuadricArray.push(board);
-  //2
+  //////////////pawn(2)
   let sphere = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   sphere.setUnitSphere();
   sphere.transform(new Mat4().scale(.1));
-  //sphere.transform(new Mat4().translate(0,4,0));
   this.clippedQuadricArray.push(sphere);
   //3
   let cone = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   cone.setCone();
-  //cone.transform(new Mat4().translate(0,4,0));
   this.clippedQuadricArray.push(cone);
-  //4
+  ///////////////////bishop(4)
   let bishopSphere = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   bishopSphere.setBishopSphere()
   bishopSphere.transform(new Mat4().scale(.1).translate(.5,0,0));
@@ -58,7 +56,7 @@ let Scene = function(gl) {
   this.clippedQuadricArray.push(bishopCone);
   //6
   this.clippedQuadricArray.push(bishopSphere);
-  //7th
+  /////////////////King (7)
   let kingUpParaboloid = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   kingUpParaboloid.setKingUpParaboloid();
   kingUpParaboloid.transform(new Mat4().translate(0,-3,9).scale(0.1));
@@ -88,9 +86,30 @@ let Scene = function(gl) {
   kingLargeCircleBase.setKingLargeCircleBase();
   kingLargeCircleBase.transform(new Mat4().translate(0,-4.9,9).scale(.1));
   this.clippedQuadricArray.push(kingLargeCircleBase);
+  ////////////Queen(12)
+  let queenHyperboloid  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
+  queenHyperboloid.setQueenHyperboloid();
+  queenHyperboloid.transform(new Mat4().translate(-1.5,-1,0).scale(.3));
+  this.clippedQuadricArray.push(queenHyperboloid);
+  //13th
+  let queenSmallCircleBase  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
+  queenSmallCircleBase.setKingSmallCircleBase();
+  queenSmallCircleBase.transform(new Mat4().translate(-4.5,-3,0).scale(.1));
+  this.clippedQuadricArray.push(queenSmallCircleBase);
+  //13.5
+  let queenLargeCircleBase  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
+  queenLargeCircleBase.setKingLargeCircleBase();
+  queenLargeCircleBase.transform(new Mat4().translate(-3.5,-4,0).scale(.13));
+  this.clippedQuadricArray.push(queenLargeCircleBase);
+  //15
+  let queenBall = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
+  queenBall.setUnitSphere();
+  queenBall.transform(new Mat4().translate(-9,-1.3,0).scale(.05));
+  this.clippedQuadricArray.push(queenBall);
+
 
   //material; update #
-  let quadricsObjects = 11;
+  let quadricsObjects = 15;
 
   this.brdfs = new Vec4Array(quadricsObjects);
   this.brdfs.at(0).set(0, 0, 0, 1); 

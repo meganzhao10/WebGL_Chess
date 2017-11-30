@@ -61,7 +61,7 @@ GameObject.prototype.draw = function(camera,lightSource,clippedQuadricArray,brdf
   Material.rayDirMatrix = camera.rayDirMatrix;
 
   //update Number of quadrics array
-  var quadricsObjects = 11;
+  var quadricsObjects = 15;
 
   let quadrics = new Mat4Array(quadricsObjects * 3);
   for (var i = 0; i < quadricsObjects; i++){

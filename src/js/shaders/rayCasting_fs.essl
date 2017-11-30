@@ -11,7 +11,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	varying vec3 worldNormal;
 	varying vec4 rayDir;
 	//update #
-	const int quadricsObjects = 11;
+	const int quadricsObjects = 15;
 
 	uniform mat4 quadrics[quadricsObjects * 3];
 	uniform vec4 brdfs[quadricsObjects];

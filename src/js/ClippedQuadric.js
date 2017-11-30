@@ -189,6 +189,24 @@ ClippedQuadric.prototype.setKingLargeCircleBase = function(){
       0, 0, 0, 0,
       0, 0, 0, 0);
 }
+ClippedQuadric.prototype.setQueenHyperboloid = function(){
+  this.surfaceCoeffMatrix.set(  
+    1, 0, 0, 0,
+    0, -.2, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, -0.01);
+  this.clipperCoeffMatrix.set(
+      0, 0, 0, 0,
+    0, 1, 0, 0,
+    0, 0, 0, 0,
+    0, 0, 0, -.4);
+  this.clipperCoeffMatrix2.set(
+      0, 0, 0, 0,
+      0, 0, 0, 0,
+      0, 0, 0, 0,
+      0, 0, 0, 0);
+}
+
 
 
 

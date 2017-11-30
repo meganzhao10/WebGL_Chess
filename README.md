@@ -90,3 +90,7 @@ Animation -
 
 	if your implementation is real-time (group B), animate at least two different objects. If your implementation in not real-time (group A), render a short sequence of images and compose them into a GIF file manually --- a single animated object is enough.
 
+Problem:
+-intersect point, see through object
+-bishop change 
+
