@@ -68,25 +68,25 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	}
 
 	bool findBestHit(vec4 e, vec4 d, out float bestT, out vec4 bestBrdf, out mat4 bestA){
-		bestT = -1.0;
 		bestBrdf = brdfs[0];
 		bestA = quadrics[0];
-		
-		//chessboard box
+		bestT = 10000000.0;
+
 		float currentT = intersectClippedQuadric(quadrics[0], quadrics[1], quadrics[2], e, d);
-		if(currentT > bestT){
-			bestT = currentT;
-			bestBrdf = brdfs[0];
-			bestA = quadrics[0];
-		}
+		if(currentT < bestT && currentT > 0.0){
+				bestT = currentT;
+				bestBrdf = brdfs[0];
+				bestA = quadrics[0];
+			}
+
 		currentT = intersectClippedQuadric(quadrics[1], quadrics[2], quadrics[0], e, d);
-		if(currentT > bestT){
+		if(currentT < bestT && currentT > 0.0){
 			bestT = currentT;
 			bestBrdf = brdfs[0];
 			bestA = quadrics[1];
 		}
 		currentT = intersectClippedQuadric(quadrics[2], quadrics[0], quadrics[1], e, d);
-		if(currentT > bestT){
+		if(currentT < bestT && currentT > 0.0){
 			bestT = currentT;
 			bestBrdf = brdfs[0];
 			bestA = quadrics[2];
@@ -94,13 +94,20 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 
 		for (int i = 3; i < quadricsObjects * 3; i += 3){
 			float currentT = intersectClippedQuadric(quadrics[i], quadrics[i+1], e, d);
-			if(currentT > bestT){
+			if(currentT < bestT && currentT > 0.0){
 				bestT = currentT;
 				bestBrdf = brdfs[(i-3)/3+1];
 				bestA = quadrics[i];
 			}
+
+			currentT = intersectClippedQuadric(quadrics[i+1], quadrics[i], e, d);
+			if(currentT < bestT && currentT > 0.0){
+				bestT = currentT;
+				bestBrdf = brdfs[(i-3)/3+1];
+				bestA = quadrics[i+1];
+			}
 		}
-		return (bestT != -1.0);
+		return (bestT !=  10000000.0);
 	}
 
 	vec4 boardColor(vec4 position){
