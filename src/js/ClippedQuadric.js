@@ -38,6 +38,23 @@ ClippedQuadric.prototype.setBoard = function(){
       0, 0, 1, 0,
       0, 0, 0, -1);
 }
+ClippedQuadric.prototype.setRecPrism = function(){
+  this.surfaceCoeffMatrix.set(
+      0, 0, 0, 0,
+      0, 1, 0, 0,
+      0, 0, 0, 0,
+      0, 0, 0, -.9);
+  this.clipperCoeffMatrix.set(
+      1, 0, 0, 0,
+      0, 0, 0, 0,
+      0, 0, 0, 0,
+      0, 0, 0, -.3);
+  this.clipperCoeffMatrix2.set(
+      0, 0, 0, 0,
+      0, 0, 0, 0,
+      0, 0, 1, 0,
+      0, 0, 0, -.3);
+}
 
 ClippedQuadric.prototype.setUnitSphere = function(){
   this.surfaceCoeffMatrix.set(
@@ -64,10 +81,10 @@ ClippedQuadric.prototype.setBishopSphere = function(){
 		0, 0, 1, 0,
 		0, 0, 0, -1);
   this.clipperCoeffMatrix.set(
-  		0, 0, 0, 0,
-		0, 0, 0, 0,
-		0, 0, 1, 0,
-		0, 1, 0, -1);
+  		-10, 0, 0, 0,
+		0, -1, 0, 0,
+		0, 0, -1, 0,
+		0, 0, 0, 1);
    this.clipperCoeffMatrix2.set(
   	  0, 0, 0, 0,
       0, 0, 0, 0,
@@ -179,7 +196,7 @@ ClippedQuadric.prototype.setKingLargeCircleBase = function(){
       0, 0, 0, 0,
       0, 0, 0, 0);
 }
-ClippedQuadric.prototype.setQueenHyperboloid = function(){
+ClippedQuadric.prototype.setHyperboloid = function(){
   this.surfaceCoeffMatrix.set(  
     1, 0, 0, 0,
     0, -.2, 0, 0,

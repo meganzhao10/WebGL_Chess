@@ -11,36 +11,10 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	varying vec3 worldNormal;
 	varying vec4 rayDir;
 	//update #
-	const int quadricsObjects = 15;
+	const int quadricsObjects = 32;
 
 	uniform mat4 quadrics[quadricsObjects * 3];
 	uniform vec4 brdfs[quadricsObjects];
-	
-
-	float intersectClippedQuadric(mat4 A, mat4 B, vec4 e, vec4 d){
-		float a = dot(d * A, d);
-		float b = dot(d * A, e) + dot(e * A, d);
-		float c = dot(e * A, e);
-		float discriminant = b * b - 4.0 * a * c;
-		if (discriminant < 0.0){
-		 	return -1.0;
-		}
-		float t1 = (-b + sqrt(discriminant)) / (2.0 * a);
-		float t2 = (-b - sqrt(discriminant)) / (2.0 * a);
-		vec4 hit1 = e + d * t1;
-		vec4 hit2 = e + d * t2;
-		if (dot(hit1 * B, hit1) > 0.0){
-			t1 = -1.0;
-		}
-		if (dot(hit2 * B, hit2) > 0.0){
-			t2 = -1.0;
-		}
-		if (t1 < t2 && t1 > 0.0 || t2 < 0.0){
-			return t1;
-		} else {
-			return t2;
-		}
-	}
 
 	float intersectClippedQuadric(mat4 A, mat4 B, mat4 C, vec4 e, vec4 d){
 		float a = dot(d * A, d);
@@ -72,39 +46,39 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 		bestA = quadrics[0];
 		bestT = 10000000.0;
 
-		float currentT = intersectClippedQuadric(quadrics[0], quadrics[1], quadrics[2], e, d);
-		if(currentT < bestT && currentT > 0.0){
-				bestT = currentT;
-				bestBrdf = brdfs[0];
-				bestA = quadrics[0];
-			}
-
-		currentT = intersectClippedQuadric(quadrics[1], quadrics[2], quadrics[0], e, d);
-		if(currentT < bestT && currentT > 0.0){
-			bestT = currentT;
-			bestBrdf = brdfs[0];
-			bestA = quadrics[1];
-		}
-		currentT = intersectClippedQuadric(quadrics[2], quadrics[0], quadrics[1], e, d);
-		if(currentT < bestT && currentT > 0.0){
-			bestT = currentT;
-			bestBrdf = brdfs[0];
-			bestA = quadrics[2];
-		}
-
-		for (int i = 3; i < quadricsObjects * 3; i += 3){
-			float currentT = intersectClippedQuadric(quadrics[i], quadrics[i+1], e, d);
+		for (int i = 0; i < quadricsObjects * 3; i += 3){
+			float currentT = intersectClippedQuadric(quadrics[i], quadrics[i+1], quadrics[i+2],e, d);
 			if(currentT < bestT && currentT > 0.0){
 				bestT = currentT;
-				bestBrdf = brdfs[(i-3)/3+1];
+				if (i == 0){
+					bestBrdf = brdfs[0];
+				} else{
+					bestBrdf = brdfs[i/3+1];
+				}
+				
 				bestA = quadrics[i];
 			}
 
-			currentT = intersectClippedQuadric(quadrics[i+1], quadrics[i], e, d);
+			currentT = intersectClippedQuadric(quadrics[i+1], quadrics[i+2],quadrics[i], e, d);
 			if(currentT < bestT && currentT > 0.0){
 				bestT = currentT;
-				bestBrdf = brdfs[(i-3)/3+1];
+				if (i == 0){
+					bestBrdf = brdfs[0];
+				} else{
+					bestBrdf = brdfs[i/3+1];
+				}
 				bestA = quadrics[i+1];
+			}
+
+			currentT = intersectClippedQuadric(quadrics[i+2], quadrics[i],quadrics[i+1], e, d);
+			if(currentT < bestT && currentT > 0.0){
+				bestT = currentT;
+				if (i == 0){
+					bestBrdf = brdfs[0];
+				} else{
+					bestBrdf = brdfs[i/3+1];
+				}
+				bestA = quadrics[i+2];
 			}
 		}
 		return (bestT !=  10000000.0);
