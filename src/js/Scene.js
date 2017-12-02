@@ -75,14 +75,14 @@ let Scene = function(gl) {
   let quadricsObjects = 32;
 
   this.brdfs = new Vec4Array(quadricsObjects);
-  this.brdfs.at(0).set(0, 0, 0, 1); 
+  this.brdfs.at(0).set(-1, -1, -1, 1); 
   for (var i = 1; i < quadricsObjects; i++){
     this.brdfs.at(i).set(.1, .6, .5, 1); 
   }
 
   this.lightSource = new LightSource();
   this.lightSource.lightPos = new Vec4Array(1);
-  this.lightSource.lightPos.at(0).set(0.7,-1,1,0); // the last 0 indicates that it's a directional light
+  this.lightSource.lightPos.at(0).set(0,-.5,-.5,0); // the last 0 indicates that it's a directional light
   this.lightSource.lightPowerDensity = new Vec4Array(1);
   this.lightSource.lightPowerDensity.at(0).set(1,1,1,1); 
   this.lightSource.mainDir = new Vec4(); 
@@ -93,32 +93,32 @@ let Scene = function(gl) {
 
 Scene.prototype.createKing = function(){
 	 /////////////////King (7)
-  let kingUpParaboloid = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
-  kingUpParaboloid.setKingUpParaboloid();
-  kingUpParaboloid.transform(new Mat4().scale(.12).translate(.13,1.81,1.382));
-  this.clippedQuadricArray.push(kingUpParaboloid);
+  let kingUpParaboloidE1 = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
+  kingUpParaboloidE1.setKingUpParaboloid();
+  kingUpParaboloidE1.transform(new Mat4().scale(.12).translate(.13,1.81,1.382));
+  this.clippedQuadricArray.push(kingUpParaboloidE1);
   //8th
-  let kingCrossV = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
-  kingCrossV.setCyclinder();
-  kingCrossV.transformClipper(new Mat4().scale(1.8));
-  kingCrossV.transform(new Mat4().scale(.08).translate(0.13,1.97,1.392));
-  this.clippedQuadricArray.push(kingCrossV);
+  let kingCrossVE1 = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
+  kingCrossVE1.setCyclinder();
+  kingCrossVE1.transformClipper(new Mat4().scale(1.8));
+  kingCrossVE1.transform(new Mat4().scale(.08).translate(0.13,1.97,1.392));
+  this.clippedQuadricArray.push(kingCrossVE1);
   //
-  let kingCrossH = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
-  kingCrossH.setCyclinder();
-  kingCrossH.transformClipper(new Mat4().scale(1.8));
-  kingCrossH.transform(new Mat4().scale(.08).rotate(3.14/2).translate(0.13,1.97,1.392));
-  this.clippedQuadricArray.push(kingCrossH);
+  let kingCrossHE1 = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
+  kingCrossHE1.setCyclinder();
+  kingCrossHE1.transformClipper(new Mat4().scale(1.8));
+  kingCrossHE1.transform(new Mat4().scale(.08).rotate(3.14/2).translate(0.13,1.97,1.392));
+  this.clippedQuadricArray.push(kingCrossHE1);
   //8th
-  let kingSmallCircleBase  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
-  kingSmallCircleBase.setKingSmallCircleBase();
-  kingSmallCircleBase.transform(new Mat4().scale(0.08).translate(.13,1.75,1.382));
-  this.clippedQuadricArray.push(kingSmallCircleBase);
+  let kingSmallCircleBaseE1  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
+  kingSmallCircleBaseE1.setKingSmallCircleBase();
+  kingSmallCircleBaseE1.transform(new Mat4().scale(0.08).translate(.13,1.75,1.382));
+  this.clippedQuadricArray.push(kingSmallCircleBaseE1);
   //9th //?
-  let kingCyclinder  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
-  kingCyclinder.setCyclinder();
-  kingCyclinder.transform(new Mat4().scale(0.1).translate(.13,1.79,1.382));
-  this.clippedQuadricArray.push(kingCyclinder);
+  let kingCyclinderE1  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
+  kingCyclinderE1.setCyclinder();
+  kingCyclinderE1.transform(new Mat4().scale(0.1).translate(.13,1.79,1.382));
+  this.clippedQuadricArray.push(kingCyclinderE1);
   //10th
   let kingDownHyperboloid = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   kingDownHyperboloid.setKingDownHyperboloid( );

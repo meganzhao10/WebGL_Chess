@@ -41,48 +41,76 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 		}
 	}
 
-	bool findBestHit(vec4 e, vec4 d, out float bestT, out vec4 bestBrdf, out mat4 bestA){
+	bool findBestHitShadow(mat4 A, mat4 B, mat4 C){
+		for (int j = 0; j < 1; j++){				
+			vec3 lightRay = worldPos.xyz * lightPos[j].w - lightPos[j].xyz;
+			vec4 lightSourceDir = vec4(normalize(lightRay),0);
+
+				float shadowT = intersectClippedQuadric(A, B, C, worldPos, lightSourceDir);
+				if (shadowT > 0.0){
+					return true;
+				}
+				shadowT = intersectClippedQuadric(B, C, A, worldPos, lightSourceDir);
+				if (shadowT > 0.0){
+					return true;
+				}
+				shadowT = intersectClippedQuadric(C, B, A, worldPos, lightSourceDir);
+				if (shadowT > 0.0){
+					return true;
+				}
+			}
+		return false;
+
+		}
+	
+
+	bool findBestHit(vec4 e, vec4 d, out float bestT, out vec4 bestBrdf, out mat4 bestA, out bool isOccludingHit){
 		bestBrdf = brdfs[0];
 		bestA = quadrics[0];
 		bestT = 10000000.0;
 
-		for (int i = 0; i < quadricsObjects * 3; i += 3){
-			float currentT = intersectClippedQuadric(quadrics[i], quadrics[i+1], quadrics[i+2],e, d);
-			if(currentT < bestT && currentT > 0.0){
-				bestT = currentT;
-				if (i == 0){
-					bestBrdf = brdfs[0];
-				} else{
-					bestBrdf = brdfs[i/3+1];
-				}
-				
-				bestA = quadrics[i];
-			}
+			for (int i = 0; i < quadricsObjects * 3; i += 3){
 
-			currentT = intersectClippedQuadric(quadrics[i+1], quadrics[i+2],quadrics[i], e, d);
-			if(currentT < bestT && currentT > 0.0){
-				bestT = currentT;
-				if (i == 0){
-					bestBrdf = brdfs[0];
-				} else{
-					bestBrdf = brdfs[i/3+1];
-				}
-				bestA = quadrics[i+1];
-			}
+				isOccludingHit = findBestHitShadow(quadrics[i], quadrics[i+1], quadrics[i+2]);
+				if (isOccludingHit) return true;
 
-			currentT = intersectClippedQuadric(quadrics[i+2], quadrics[i],quadrics[i+1], e, d);
-			if(currentT < bestT && currentT > 0.0){
-				bestT = currentT;
-				if (i == 0){
-					bestBrdf = brdfs[0];
-				} else{
-					bestBrdf = brdfs[i/3+1];
+				float currentT = intersectClippedQuadric(quadrics[i], quadrics[i+1], quadrics[i+2],e, d);
+				if(currentT < bestT && currentT > 0.0){
+					bestT = currentT;
+					if (i == 0){
+						bestBrdf = brdfs[0];
+					} else{
+						bestBrdf = brdfs[i/3+1];
+					}
+					
+					bestA = quadrics[i];
 				}
-				bestA = quadrics[i+2];
+
+				currentT = intersectClippedQuadric(quadrics[i+1], quadrics[i+2],quadrics[i], e, d);
+				if(currentT < bestT && currentT > 0.0){
+					bestT = currentT;
+					if (i == 0){
+						bestBrdf = brdfs[0];
+					} else{
+						bestBrdf = brdfs[i/3+1];
+					}
+					bestA = quadrics[i+1];
+				}
+
+				currentT = intersectClippedQuadric(quadrics[i+2], quadrics[i],quadrics[i+1], e, d);
+				if(currentT < bestT && currentT > 0.0){
+					bestT = currentT;
+					if (i == 0){
+						bestBrdf = brdfs[0];
+					} else{
+						bestBrdf = brdfs[i/3+1];
+					}
+					bestA = quadrics[i+2];
+				}
 			}
+			return (bestT !=  10000000.0);
 		}
-		return (bestT !=  10000000.0);
-	}
+	
 
 	vec4 boardColor(vec4 position){
 		float row = floor(position.x * 4.0);
@@ -107,50 +135,50 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 		vec4 e = vec4(cameraPosition,1);
 		vec4 d = vec4(normalize(rayDir.xyz),0);
 
-		float bestT; vec4 bestBrdf; mat4 bestA;
-		bool intersect = findBestHit(e, d, bestT, bestBrdf, bestA);
+		float bestT; vec4 bestBrdf; mat4 bestA; bool isOccludingHit;
+		bool intersect = findBestHit(e, d, bestT, bestBrdf, bestA, isOccludingHit);
 
 		if (!intersect){
 			gl_FragColor = texture2D(probeTexture, probeTex);
 		} else {
-			vec4 intersectPoint = e + d * bestT;
-		  	vec3 quadricNormal = normalize((bestA * intersectPoint + intersectPoint * bestA).xyz);
-			//gl_FragColor = vec4(bestBrdf, 1);
-			
-			//gl_FragColor = boardColor(intersectPoint);
-			if (bestBrdf == brdfs[0]){
-				bestBrdf = boardColor(intersectPoint);
-			}
-
 			vec3 color = vec3(0,0,0);
-
-			for (int i = 0; i < 1; i++){
-
-				vec3 lightDiff = lightPos[i].xyz - intersectPoint.xyz * lightPos[i].w;
-				vec3 viewDiff = cameraPosition - intersectPoint.xyz;
-				vec3 halfwayVector = normalize(viewDiff) + normalize(lightDiff * (-1.0));
-
-				vec3 powerDensity;
-				if (lightPos[i].w == 1.0){
-					powerDensity = lightPowerDensity[i].xyz * pow(max(0.0,dot(normalize(mainDir.xyz),normalize((-1.0) * lightDiff))), 5.0);
-				} else{
-					powerDensity = lightPowerDensity[i].xyz;
+			if (!isOccludingHit){
+				vec4 intersectPoint = e + d * bestT;
+			  	vec3 quadricNormal = normalize((bestA * intersectPoint + intersectPoint * bestA).xyz);
+				//gl_FragColor = vec4(bestBrdf, 1);
+				
+				//gl_FragColor = boardColor(intersectPoint);
+				if (bestBrdf == brdfs[0]){
+					bestBrdf = boardColor(intersectPoint);
 				}
 
-				float cosTheta = max(dot(normalize(lightDiff), normalize(quadricNormal)),0.0);
-				vec3 diffuseLight = powerDensity / pow(length(lightDiff), 2.0) * 
-					bestBrdf.xyz * cosTheta;
+				for (int i = 0; i < 1; i++){
 
-				float shininess = 3.0;
-				float specularLightWeight = pow(max(0.0, dot(normalize(quadricNormal),halfwayVector)),shininess);
-				vec3 specularLight = bestBrdf.xyz * specularLightWeight;
+					vec3 lightDiff = lightPos[i].xyz - intersectPoint.xyz * lightPos[i].w;
+					vec3 viewDiff = cameraPosition - intersectPoint.xyz;
+					vec3 halfwayVector = normalize(viewDiff) + normalize(lightDiff * (-1.0));
 
-				color += diffuseLight + specularLight;
+					vec3 powerDensity;
+					if (lightPos[i].w == 1.0){
+						powerDensity = lightPowerDensity[i].xyz * pow(max(0.0,dot(normalize(mainDir.xyz),normalize((-1.0) * lightDiff))), 5.0);
+					} else{
+						powerDensity = lightPowerDensity[i].xyz;
+					}
+
+					float cosTheta = max(dot(normalize(lightDiff), normalize(quadricNormal)),0.0);
+					vec3 diffuseLight = powerDensity / pow(length(lightDiff), 2.0) * 
+						bestBrdf.xyz * cosTheta;
+
+					float shininess = 3.0;
+					float specularLightWeight = pow(max(0.0, dot(normalize(quadricNormal),halfwayVector)),shininess);
+					vec3 specularLight = bestBrdf.xyz * specularLightWeight;
+
+					color += diffuseLight + specularLight;
+				}
 			}
-
 			gl_FragColor = vec4(color,1);
 
-			}
+		}
 
 	}
 
