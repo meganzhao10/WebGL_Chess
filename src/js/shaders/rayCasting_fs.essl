@@ -67,7 +67,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 	bool findBestHit(vec4 e, vec4 d, out float bestT, out vec4 bestBrdf, out mat4 bestA, out bool isOccludingHit){
 		bestBrdf = brdfs[0];
 		bestA = quadrics[0];
-		bestT = 10000000.0;
+		bestT = 1000000.0;
 
 			for (int i = 0; i < quadricsObjects * 3; i += 3){
 
@@ -108,7 +108,7 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 					bestA = quadrics[i+2];
 				}
 			}
-			return (bestT !=  10000000.0);
+			return (bestT !=  1000000.0);
 		}
 	
 
