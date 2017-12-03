@@ -43,33 +43,17 @@ let Scene = function(gl) {
   this.createBishop();
   this.createRook();
 
-  
-
-
-
-
-
-
-
 
   //////////////pawn(2)
   let sphere = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   sphere.setUnitSphere();
-  sphere.transform(new Mat4().scale(.1).translate(0,2,0));
+  sphere.transform(new Mat4().scale(.06).translate(0.88,1.68,1.13));
   this.clippedQuadricArray.push(sphere);
   //3
   let cone = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   cone.setCone();
-  cone.transform(new Mat4().translate(0,2,0));
+  cone.transform(new Mat4().scale(0.6).translate(0.88,1.68,1.13));
   this.clippedQuadricArray.push(cone);
-
-
-
-
-
-
-
-
 
   //material; update #
   let quadricsObjects = 32;
@@ -77,16 +61,19 @@ let Scene = function(gl) {
   this.brdfs = new Vec4Array(quadricsObjects);
   this.brdfs.at(0).set(-1, -1, -1, 1); 
   for (var i = 1; i < quadricsObjects; i++){
-    //this.brdfs.at(i).set(.1, .6, .5, 1); 
-    this.brdfs.at(i).set(1,1,1,1);
+    if (i < 24 && i > 16){
+      this.brdfs.at(i).set(1,1,1,201);
+    } else {
+      this.brdfs.at(i).set(.1, .6, .5, 1); 
+    }
   }
 
 
   this.lightSource = new LightSource();
   this.lightSource.lightPos = new Vec4Array(3);
   this.lightSource.lightPos.at(0).set(0,-1,-1,0); // the last 0 indicates that it's a directional light
-  this.lightSource.lightPos.at(1).set(.38,1.75,1.37,1);
-  this.lightSource.lightPos.at(2).set(-.37,1.75,1.37,1);
+  this.lightSource.lightPos.at(1).set(.38,1.71,1.37,1);
+  this.lightSource.lightPos.at(2).set(-.37,1.71,1.37,1);
   this.lightSource.lightPowerDensity = new Vec4Array(3);
   this.lightSource.lightPowerDensity.at(0).set(1,1,1,1); 
   this.lightSource.lightPowerDensity.at(1).set(50,0,0,1); 
@@ -98,40 +85,40 @@ let Scene = function(gl) {
 
 
 Scene.prototype.createKing = function(){
-	 /////////////////King (7)
+	 /////////////////King (1)
   let kingUpParaboloidE1 = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   kingUpParaboloidE1.setKingUpParaboloid();
   kingUpParaboloidE1.transform(new Mat4().scale(.12).translate(.13,1.81,1.382));
   this.clippedQuadricArray.push(kingUpParaboloidE1);
-  //8th
+  //2th
   let kingCrossVE1 = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   kingCrossVE1.setCyclinder();
   kingCrossVE1.transformClipper(new Mat4().scale(1.8));
   kingCrossVE1.transform(new Mat4().scale(.08).translate(0.13,1.97,1.392));
   this.clippedQuadricArray.push(kingCrossVE1);
-  //
+  //3
   let kingCrossHE1 = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   kingCrossHE1.setCyclinder();
   kingCrossHE1.transformClipper(new Mat4().scale(1.8));
   kingCrossHE1.transform(new Mat4().scale(.08).rotate(3.14/2).translate(0.13,1.97,1.392));
   this.clippedQuadricArray.push(kingCrossHE1);
-  //8th
+  //4th
   let kingSmallCircleBaseE1  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   kingSmallCircleBaseE1.setKingSmallCircleBase();
   kingSmallCircleBaseE1.transform(new Mat4().scale(0.08).translate(.13,1.75,1.382));
   this.clippedQuadricArray.push(kingSmallCircleBaseE1);
-  //9th //?
+  //5th //?
   let kingCyclinderE1  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   kingCyclinderE1.setCyclinder();
   kingCyclinderE1.transform(new Mat4().scale(0.1).translate(.13,1.79,1.382));
   this.clippedQuadricArray.push(kingCyclinderE1);
-  //10th
+  //6th
   let kingDownHyperboloid = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   kingDownHyperboloid.setKingDownHyperboloid( );
   kingDownHyperboloid.transform(new Mat4().scale(0.3).translate(.13,1.73,1.382));
   kingDownHyperboloid.transformClipper(new Mat4().translate(0,-.09,0));
   this.clippedQuadricArray.push(kingDownHyperboloid);
-  //11th
+  //7th
   let kingLargeCircleBase  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   kingLargeCircleBase.setKingLargeCircleBase();
   kingLargeCircleBase.transform(new Mat4().scale(0.115).translate(.13,1.53,1.386));
@@ -139,22 +126,22 @@ Scene.prototype.createKing = function(){
 }
 
 Scene.prototype.createQueen = function(){
-////////////Queen(12)
+////////////Queen(8)
   let queenHyperboloid  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   queenHyperboloid.setHyperboloid();
   queenHyperboloid.transform(new Mat4().scale(0.3).translate(-.13,1.7,1.382));
   this.clippedQuadricArray.push(queenHyperboloid);
-  //13th
+  //9th
   let queenSmallCircleBase  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   queenSmallCircleBase.setKingSmallCircleBase();
   queenSmallCircleBase.transform(new Mat4().scale(.075).translate(-0.13,1.72,1.382));
   this.clippedQuadricArray.push(queenSmallCircleBase);
-  //14
+  //10
   let queenLargeCircleBase  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   queenLargeCircleBase.setKingLargeCircleBase();
   queenLargeCircleBase.transform(new Mat4().scale(.115).translate(-.13,1.53,1.378));
   this.clippedQuadricArray.push(queenLargeCircleBase);
-  //15
+  //11
   let queenBall = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   queenBall.setUnitSphere();
   queenBall.transform(new Mat4().scale(.06).translate(-.13,1.94,1.382));
@@ -162,24 +149,24 @@ Scene.prototype.createQueen = function(){
 }
 
 Scene.prototype.createBishop = function(){
-	///////////////////bishop(4)
+	///////////////////bishop(12)
   let bishopSphereF1 = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   bishopSphereF1.setBishopSphere()
   bishopSphereF1.transform(new Mat4().scale(.07).translate(.38,1.71,1.37));
   bishopSphereF1.transformClipper(new Mat4().translate(.02,.017,0));
   this.clippedQuadricArray.push(bishopSphereF1);
-  //5
+  //13
   let bishopConeF1 = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   bishopConeF1.setCone();
   bishopConeF1.transform(new Mat4().scale(0.7).translate(.38,1.71,1.37));
   this.clippedQuadricArray.push(bishopConeF1);
-  //
+  //14
   let bishopSphereC1 = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   bishopSphereC1.setBishopSphere()
   bishopSphereC1.transform(new Mat4().scale(.07).translate(-.37, 1.71,1.37));
   bishopSphereC1.transformClipper(new Mat4().translate(.02,.017,0));
   this.clippedQuadricArray.push(bishopSphereC1);
-  //5
+  //15
   let bishopConeC1 = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   bishopConeC1.setCone();
   bishopConeC1.transform(new Mat4().scale(0.7).translate(-.37,1.71,1.37));
@@ -187,38 +174,38 @@ Scene.prototype.createBishop = function(){
 }
 
 Scene.prototype.createRook = function(){
-  //////////////ROOK
+  //////////////ROOK 16
   let rookCircleBaseA1  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   rookCircleBaseA1.setKingLargeCircleBase();
   rookCircleBaseA1.transform(new Mat4().scale(0.08).translate(-0.88,1.51,1.375));
   this.clippedQuadricArray.push(rookCircleBaseA1);
-  //
+  //17
   let rookHyperboloidA1  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   rookHyperboloidA1.setHyperboloid();
   rookHyperboloidA1.transform(new Mat4().scale(0.32).translate(-.88,1.65,1.375));
   rookHyperboloidA1.transformClipper(new Mat4().scale(0.4).translate(0,.95,0));
   this.clippedQuadricArray.push(rookHyperboloidA1);
-  //
+  //18
   let rookCircleA1  = new ClippedQuadric(new Mat4(),new Mat4(),new Mat4());
   rookCircleA1.setKingSmallCircleBase();
   rookCircleA1.transform(new Mat4().scale(.08).translate(-0.88,1.69,1.375));
   this.clippedQuadricArray.push(rookCircleA1);
-  ////
+  ////19
   let rookRecPrismA1a = new ClippedQuadric(new Mat4(),new Mat4(), new Mat4());
   rookRecPrismA1a.setRecPrism();
   rookRecPrismA1a.transform(new Mat4().scale(0.014).translate(-0.916,1.712,1.375));
   this.clippedQuadricArray.push(rookRecPrismA1a);
-  ////
+  ////20
   let rookRecPrismA1b = new ClippedQuadric(new Mat4(),new Mat4(), new Mat4());
   rookRecPrismA1b.setRecPrism();
   rookRecPrismA1b.transform(new Mat4().scale(0.014).translate(-0.844,1.712,1.375));
   this.clippedQuadricArray.push(rookRecPrismA1b);
-   ////
+   ////21
   let rookRecPrismA1c = new ClippedQuadric(new Mat4(),new Mat4(), new Mat4());
   rookRecPrismA1c.setRecPrism();
   rookRecPrismA1c.transform(new Mat4().scale(0.014).translate(-0.879,1.712,1.34));
   this.clippedQuadricArray.push(rookRecPrismA1c);
-   ////
+   ////22
   let rookRecPrismA1d = new ClippedQuadric(new Mat4(),new Mat4(), new Mat4());
   rookRecPrismA1d.setRecPrism();
   rookRecPrismA1d.transform(new Mat4().scale(0.014).translate(-0.879,1.712,1.412));
@@ -276,6 +263,22 @@ Scene.prototype.update = function(gl, keysPressed) {
   gl.enable(gl.DEPTH_TEST);
   gl.clearDepth(1.0);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  if(keysPressed.T) {
+    for (var i = 1; i < 8; i++){
+      this.clippedQuadricArray[i].transform(new Mat4().translate(0,0,-.12));
+    }
+  }
+  if(keysPressed.R){
+    for (var j = 16; j < 23; j++){
+      this.clippedQuadricArray[j].transform(new Mat4().translate(0,0,-.12));
+    }
+  }
+    if(keysPressed.G){
+    for (var j = 16; j < 23; j++){
+      this.clippedQuadricArray[j].transform(new Mat4().translate(0.12,0,0));
+    }
+  }
 
   this.camera.move(dt, keysPressed);
   

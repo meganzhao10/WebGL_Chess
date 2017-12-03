@@ -4,6 +4,7 @@ let ClippedQuadric =
   this.surfaceCoeffMatrix = surfaceCoeffMatrix;
   this.clipperCoeffMatrix = clipperCoeffMatrix;
   this.clipperCoeffMatrix2 = clipperCoeffMatrix2;
+  this.isReflective = false;
 }
 
 ClippedQuadric.prototype.transform = function(transformMatrix){
