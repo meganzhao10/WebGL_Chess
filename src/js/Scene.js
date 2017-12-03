@@ -77,17 +77,23 @@ let Scene = function(gl) {
   this.brdfs = new Vec4Array(quadricsObjects);
   this.brdfs.at(0).set(-1, -1, -1, 1); 
   for (var i = 1; i < quadricsObjects; i++){
-    this.brdfs.at(i).set(.1, .6, .5, 1); 
+    //this.brdfs.at(i).set(.1, .6, .5, 1); 
+    this.brdfs.at(i).set(1,1,1,1);
   }
 
+
   this.lightSource = new LightSource();
-  this.lightSource.lightPos = new Vec4Array(1);
-  this.lightSource.lightPos.at(0).set(0,-.5,-.5,0); // the last 0 indicates that it's a directional light
-  this.lightSource.lightPowerDensity = new Vec4Array(1);
+  this.lightSource.lightPos = new Vec4Array(3);
+  this.lightSource.lightPos.at(0).set(0,-1,-1,0); // the last 0 indicates that it's a directional light
+  this.lightSource.lightPos.at(1).set(.38,1.75,1.37,1);
+  this.lightSource.lightPos.at(2).set(-.37,1.75,1.37,1);
+  this.lightSource.lightPowerDensity = new Vec4Array(3);
   this.lightSource.lightPowerDensity.at(0).set(1,1,1,1); 
-  this.lightSource.mainDir = new Vec4(); 
+  this.lightSource.lightPowerDensity.at(1).set(50,0,0,1); 
+  this.lightSource.lightPowerDensity.at(2).set(50,0,0,1); 
+  this.lightSource.mainDir = new Vec4(0,10,0,0); 
   this.camera = new PerspectiveCamera();
-  this.camera.position.set(0,2,2.9);
+  this.camera.position.set(0,2.4,3.2);
 };
 
 

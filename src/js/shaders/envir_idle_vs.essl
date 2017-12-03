@@ -9,16 +9,16 @@ Shader.source[document.currentScript.src.split('js/shaders/')[1]] = `
 
 	uniform mat4 modelMatrix;
 	uniform mat4 modelMatrixInverse;
-	varying vec4 worldPos;
 	varying vec3 worldNormal;
 	varying vec4 rayDir;
 	  	  
 
 	void main(void) {
+
 		gl_Position = vertexPosition;
 		gl_Position.z = 0.99;
 		//texCoord = vertexTexCoord;
-		//worldPos = vertexPosition * modelMatrix;
+		
 		//worldNormal = (modelMatrixInverse * vec4(vertexNormal, 0)).xyz;
 		rayDir = vertexPosition * rayDirMatrix;
 
