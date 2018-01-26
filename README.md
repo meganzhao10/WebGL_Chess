@@ -1,6 +1,10 @@
 # WebGL_Chess
 Computer Graphics Project - Write a ray tracer with OpenGL, rendering a chess scene.
 
+## Demo
+![Alt text](img-demo/chess1.png?raw=true "chess-demo1")
+![Alt text](img-demo/chess2.png?raw=true "chess-demo2")
+
 ## Implemented Features
 Chessboard -
 
