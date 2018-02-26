@@ -1,6 +1,24 @@
 # WebGL_Chess
 Computer Graphics Project - Write a ray tracer with OpenGL, rendering a chess scene.
 
+## How To Run
+```
+# Clone this repository
+$ git clone https://github.com/meganzhao/WebGL_Chess.git
+
+# Go into the repository
+$ cd WebGL_Chess
+
+# Go into the source folder
+$ cd Src
+
+# Open the URL of the game
+$ open index.html
+
+# The page may not load because Chrome doesn't allow file access. Close Chrome and type this on Mac OS X terminal:
+$open /Applications/Google\ Chrome.app --args --allow-file-access-from-files
+```
+
 ## Demo
 ![Alt text](img-demo/chess1.png?raw=true "chess-demo1")
 ![Alt text](img-demo/chess2.png?raw=true "chess-demo2")
